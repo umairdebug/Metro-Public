@@ -1,0 +1,114 @@
+﻿@model Metro.Models.Product
+@inject AppDbContext _context
+
+@{
+    ViewData["Title"] = "Edit";
+    var categories = new SelectList(_context.Category.Select(m => new { m.Id, m.Name }).ToList(), "Id", "Name", Model?.CategoryId);
+    var Appuser = new SelectList(_context.AppUser.Select(m => new { m.Id, m.Name }).ToList(), "Id", "Name", Model?.AppUsersId);
+}
+
+<h1>Edit</h1>
+
+<h4>Product</h4>
+<hr />
+
+<div id="productUpdateApp">
+    <form asp-action="Edit" enctype="multipart/form-data">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div class="form-group">
+                            <label asp-for="Name" class="control-label"></label>
+                            <input asp-for="Name" class="form-control" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Description" class="control-label"></label>
+                            <textarea asp-for="Description" class="form-control"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Rank" class="control-label"></label>
+                            <input asp-for="Rank" class="form-control" />
+                            <span asp-validation-for="Rank" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="PurchasePrice" class="control-label"></label>
+                            <input asp-for="PurchasePrice" class="form-control" />
+                            <span asp-validation-for="PurchasePrice" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="SalePrice" class="control-label"></label>
+                            <input asp-for="SalePrice" class="form-control" />
+                            <span asp-validation-for="SalePrice" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="AppUsersId" class="control-label"></label>
+                            <select asp-for="AppUsersId" class="form-control" asp-items="Appuser"></select>
+                            <span asp-validation-for="AppUsersId" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="CategoryId" class="control-label"></label>
+                            <select asp-for="CategoryId" class="form-control" asp-items="categories"></select>
+                            <span asp-validation-for="CategoryId" class="text-danger"></span>
+                        </div>
+                        <input type="hidden" asp-for="Id" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Product Image</h4>
+                        <div class="row">
+                            <div class="col-md-3" v-for="i in images.filter(m => !m.deleted)">
+                                <div>
+                                    <span class="fa fa-trash" @@click="i.deleted = true"></span>
+                                </div>
+                                <img :src="`/${i.url}`" class="img" style="width:100%" />
+                            </div>
+                        </div>
+
+                        <div class="row" v-if="images.filter(m => m.deleted).length">
+                            <p class="text-danger col-md-12">Following images will be deleted on update.</p>
+
+                            <div class="col-md-3" v-for="i in images.filter(m => m.deleted)">
+                                <div>
+                                    <span class="fa fa-trash" @@click="i.deleted = false"></span>
+                                </div>
+                                <img :src="`/${i.url}`" class="img" style="width:100%" />
+                                <input type="hidden" name="DeletedImageId" :value="i.id" />
+                            </div>
+                        </div>
+
+                        <div class="form-group mt-4">
+                            <label asp-for="Uploads" class="control-label"></label>
+                            <input asp-for="Uploads" type="file" multiple />
+                            <span asp-validation-for="Uploads" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <input type="submit" value="Save" class="btn btn-primary" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+@section js{
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+    <script>
+        var productUpdateApp = Vue.createApp({
+            data() {
+                return {
+                    images: @Html.Raw(Json.Serialize(Model.Images.OrderBy(m => m.Rank).Select(m => new { m.Id, m.Url, Deleted = false })))
+                }
+            }
+        }).mount('#productUpdateApp');
+    </script>
+}

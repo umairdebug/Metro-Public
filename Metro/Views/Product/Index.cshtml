@@ -1,0 +1,97 @@
+﻿@model IEnumerable<Metro.Models.ProductViewModel>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create" class="btn-create-product"> Create <i class="fa-regular fa-square-plus"></i> </a>
+</p>
+
+<div class="product-form">
+    <div class="form-area"></div>
+    <i class="fa fa-spin fa-spinner text-info d-none"></i>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+                <i class="fa-solid fa-user-tie"></i>
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+                <i class="fa-solid fa-file-waveform"></i>
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Rank)
+                <i class="fa-solid fa-image"></i>
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PurchasePrice)
+                <i class="fa-solid fa-sack-dollar"></i>
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SalePrice)
+                <i class="fa-solid fa-hand-holding-dollar"></i>
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Category)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Image)
+                <i class="fa-solid fa-image"></i>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Rank)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PurchasePrice)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SalePrice)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Category)
+                </td>
+                <td>
+                    <img src="/@item.ImageUrl">
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id"><i class="fa-solid fa-user-pen"></i></a> |
+                    <a asp-action="Details" asp-route-id="@item.Id"><i class="fa-solid fa-circle-info"></i></a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id"><i class="fa-solid fa-trash text-danger"></i></a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+@section js{
+    <script>
+        $(".btn-create-product").click(function (e) {
+            e.preventDefault();
+            $(".product-form .fa-spinner").removeClass('d-none');
+            $.get('/Product/Create?iar=true', function (res) {
+                $(".product-form .fa-spinner").addClass('d-none');
+                $(".product-form .form-area").hide(0).html(res).slideDown(500);
+            });
+        });
+    </script>
+}
